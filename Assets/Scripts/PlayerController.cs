@@ -1,23 +1,39 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    // This will store our physics component
+    [Header("Components")]
     private Rigidbody rb;
 
-    // This runs once when the game starts
+    [Header("Input Values")]
+    private Vector2 moveInput;
+
+    [Header("Movement Settings")]
+    public float moveSpeed = 10f;
+
     void Start()
     {
-        // Get the Rigidbody component attached to this object
         rb = GetComponent<Rigidbody>();
-        
-        // Test message to confirm the script is working
         Debug.Log("Player Controller Started!");
     }
 
-    // This runs every physics frame (50 times per second by default)
     void FixedUpdate()
     {
-        // We'll add movement code here soon
+        HandleMovement();
+    }
+
+    void HandleMovement()
+    {
+        // Create a movement direction based on input
+        Vector3 moveDirection = new Vector3(moveInput.x, 0, moveInput.y);
+
+        // Apply force to move the player
+        rb.AddForce(moveDirection * moveSpeed, ForceMode.Force);
+    }
+
+    public void OnMove(InputAction.CallbackContext context)
+    {
+        moveInput = context.ReadValue<Vector2>();
     }
 }
