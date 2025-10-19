@@ -21,18 +21,23 @@ public class CameraFollow : MonoBehaviour
     public float minVerticalAngle = -80f;
     public float maxVerticalAngle = 80f;
 
-    // Input values
     private Vector2 lookInput;
-
-    // Current rotation angles
-    private float currentYaw = 0f;   // Horizontal rotation
-    private float currentPitch = 20f; // Vertical rotation
+    private float currentYaw = 0f;
+    private float currentPitch = 20f;
 
     void Start()
     {
-        // Hide and lock the cursor for mouse look
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        if (target == null)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+                target = player.transform;
+            else
+                Debug.LogError("No target assigned and no Player tag found!");
+        }
     }
 
     void LateUpdate()
@@ -45,15 +50,11 @@ public class CameraFollow : MonoBehaviour
 
     void HandleCameraRotation()
     {
-        // Get look input and apply sensitivity
         float lookX = lookInput.x;
         float lookY = lookInput.y;
 
-        // Different sensitivity for mouse vs gamepad
-        // Mouse gives delta movement, gamepad gives continuous values
         if (Mathf.Abs(lookInput.x) > 0 || Mathf.Abs(lookInput.y) > 0)
         {
-            // Check if input is from mouse (usually larger values) or gamepad
             bool isMouseInput = Mathf.Abs(lookInput.x) > 2f || Mathf.Abs(lookInput.y) > 2f;
 
             if (isMouseInput)
@@ -68,36 +69,26 @@ public class CameraFollow : MonoBehaviour
             }
         }
 
-        // Clamp vertical rotation
         currentPitch = Mathf.Clamp(currentPitch, minVerticalAngle, maxVerticalAngle);
     }
 
     void UpdateCameraPosition()
     {
-        // Calculate rotation
         Quaternion rotation = Quaternion.Euler(currentPitch, currentYaw, 0);
-
-        // Calculate position based on rotation and distance
         Vector3 offset = rotation * new Vector3(0, 0, -distance);
         Vector3 targetPosition = target.position + offset;
 
-        // Apply position
         transform.position = targetPosition;
-
-        // Look at target
         transform.LookAt(target.position);
     }
 
-    // Called by Input System
-    public void OnLook(InputAction.CallbackContext context)
+    public void ReceiveLookInput(Vector2 input)
     {
-        lookInput = context.ReadValue<Vector2>();
+        lookInput = input;
     }
 
-    // Allow player to unlock cursor with ESC key
     void Update()
     {
-        // Use new Input System to detect ESC key
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             if (Cursor.lockState == CursorLockMode.Locked)
