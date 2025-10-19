@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 public class CameraFollow : MonoBehaviour
 {
@@ -96,7 +97,8 @@ public class CameraFollow : MonoBehaviour
     // Allow player to unlock cursor with ESC key
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        // Use new Input System to detect ESC key
+        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             if (Cursor.lockState == CursorLockMode.Locked)
             {
