@@ -482,6 +482,7 @@ GameObject:
   - component: {fileID: 671787515}
   - component: {fileID: 671787514}
   - component: {fileID: 671787518}
+  - component: {fileID: 671787519}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -609,6 +610,28 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 1
+--- !u!114 &671787519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 671787513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0688d6e004be96042af01215d374263e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  thrustForce: 50
+  strafeForce: 30
+  verticalForce: 25
+  maxBoost: 100
+  boostRechargeRate: 30
+  boostDrainRate: 15
+  pitchSpeed: 100
+  yawSpeed: 100
+  maxNormalSpeed: 80
+  maxBoostSpeed: 120
 --- !u!1 &1481944987
 GameObject:
   m_ObjectHideFlags: 0
