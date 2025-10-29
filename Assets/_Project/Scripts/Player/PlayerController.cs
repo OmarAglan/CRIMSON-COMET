@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
@@ -19,9 +20,21 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float boostRechargeRate = 30f;
     [SerializeField] private float boostDrainRate = 15f;
 
+    // Boost events for UI/VFX hookup
+    public event Action<float> OnBoostChanged; // Reports 0-1 fill percentage
+    public event Action OnBoostDepleted;
+    public event Action OnBoostRecharged;
+
+    private bool wasBoostEmpty = false;
+
     [Header("Rotation")]
     [SerializeField] private float pitchSpeed = 100f;
     [SerializeField] private float yawSpeed = 100f;
+
+    [Header("Input Settings")]
+    [SerializeField] private float stickDeadZone = 0.15f;
+    [SerializeField] private AnimationCurve movementResponseCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    [SerializeField] private AnimationCurve lookResponseCurve = AnimationCurve.Linear(0, 0, 1, 1);
 
     [Header("Speed Limits")]
     [SerializeField] private float maxNormalSpeed = 80f;
@@ -80,19 +93,22 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMovement()
     {
+        // Process input through curves and deadzone
+        Vector2 processedMove = ProcessInput(moveInput, stickDeadZone, movementResponseCurve);
+
         // Forward/backward thrust
-        if (moveInput.y != 0)
+        if (processedMove.y != 0)
         {
-            rb.AddRelativeForce(Vector3.forward * moveInput.y * thrustForce);
+            rb.AddRelativeForce(Vector3.forward * processedMove.y * thrustForce);
         }
 
         // Strafe left/right
-        if (moveInput.x != 0)
+        if (processedMove.x != 0)
         {
-            rb.AddRelativeForce(Vector3.right * moveInput.x * strafeForce);
+            rb.AddRelativeForce(Vector3.right * processedMove.x * strafeForce);
         }
 
-        // Vertical movement
+        // Vertical movement (keep raw for buttons)
         if (isAscending)
         {
             rb.AddRelativeForce(Vector3.up * verticalForce);
@@ -113,17 +129,20 @@ public class PlayerController : MonoBehaviour
 
     private void HandleRotation()
     {
+        // Process look input through curve
+        Vector2 processedLook = ProcessInput(lookInput, stickDeadZone, lookResponseCurve);
+
         // Pitch (look up/down)
-        if (lookInput.y != 0)
+        if (processedLook.y != 0)
         {
-            float pitch = -lookInput.y * pitchSpeed * Time.fixedDeltaTime;
+            float pitch = -processedLook.y * pitchSpeed * Time.fixedDeltaTime;
             rb.transform.Rotate(Vector3.right, pitch, Space.Self);
         }
 
         // Yaw (look left/right)
-        if (lookInput.x != 0)
+        if (processedLook.x != 0)
         {
-            float yaw = lookInput.x * yawSpeed * Time.fixedDeltaTime;
+            float yaw = processedLook.x * yawSpeed * Time.fixedDeltaTime;
             rb.transform.Rotate(Vector3.up, yaw, Space.Self);
         }
     }
@@ -140,11 +159,33 @@ public class PlayerController : MonoBehaviour
 
     private void HandleBoostRecharge()
     {
+        float previousBoost = currentBoost;
+
         if (!isPrimaryBoosting && currentBoost < maxBoost)
         {
             currentBoost += boostRechargeRate * Time.deltaTime;
             currentBoost = Mathf.Min(currentBoost, maxBoost);
+
+            // Trigger recharged event when full
+            if (previousBoost < maxBoost && currentBoost >= maxBoost)
+            {
+                OnBoostRecharged?.Invoke();
+            }
         }
+
+        // Check for depletion
+        if (currentBoost <= 0 && !wasBoostEmpty)
+        {
+            wasBoostEmpty = true;
+            OnBoostDepleted?.Invoke();
+        }
+        else if (currentBoost > 0 && wasBoostEmpty)
+        {
+            wasBoostEmpty = false;
+        }
+
+        // Always notify of boost changes (for UI gauge)
+        OnBoostChanged?.Invoke(currentBoost / maxBoost);
     }
 
     private void OnDrawGizmos()
@@ -159,4 +200,28 @@ public class PlayerController : MonoBehaviour
         Gizmos.color = Color.blue;
         Gizmos.DrawRay(transform.position, transform.forward * 3f);
     }
+
+    private Vector2 ProcessInput(Vector2 rawInput, float deadZone, AnimationCurve curve)
+    {
+        // Apply dead zone
+        if (rawInput.magnitude < deadZone)
+            return Vector2.zero;
+
+        // Normalize direction and get magnitude
+        Vector2 direction = rawInput.normalized;
+        float magnitude = rawInput.magnitude;
+        
+        // Clamp magnitude to 1.0 max
+        magnitude = Mathf.Clamp01(magnitude);
+        
+        // Apply response curve
+        magnitude = curve.Evaluate(magnitude);
+
+        return direction * magnitude;
+    }
+
+    // Public properties for external access
+    public float CurrentBoost => currentBoost;
+    public float MaxBoost => maxBoost;
+    public bool IsBoosting => isPrimaryBoosting;
 }
