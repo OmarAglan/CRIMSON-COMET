@@ -1,3 +1,17 @@
+// ============================================================================
+// CRIMSON COMET - Player Controller
+// ============================================================================
+// Handles all player movement, rotation, and boost mechanics in 6DoF space.
+// Uses Unity's new Input System for controller support.
+// 
+// Features:
+// - 6 Degrees of Freedom flight
+// - Boost system with recharge
+// - Analog stick dead zones and response curves
+// - Speed limiting
+// - Event system for UI/VFX hookup
+// ============================================================================
+
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
@@ -91,6 +105,10 @@ public class PlayerController : MonoBehaviour
         CapVelocity();
     }
 
+    /// <summary>
+    /// Applies movement forces based on player input.
+    /// Called every physics frame (FixedUpdate).
+    /// </summary>
     private void HandleMovement()
     {
         // Process input through curves and deadzone
@@ -201,6 +219,10 @@ public class PlayerController : MonoBehaviour
         Gizmos.DrawRay(transform.position, transform.forward * 3f);
     }
 
+    /// <summary>
+    /// Processes raw analog input through dead zone and response curve.
+    /// Returns smoothed, refined input value.
+    /// </summary>
     private Vector2 ProcessInput(Vector2 rawInput, float deadZone, AnimationCurve curve)
     {
         // Apply dead zone
@@ -210,10 +232,10 @@ public class PlayerController : MonoBehaviour
         // Normalize direction and get magnitude
         Vector2 direction = rawInput.normalized;
         float magnitude = rawInput.magnitude;
-        
+
         // Clamp magnitude to 1.0 max
         magnitude = Mathf.Clamp01(magnitude);
-        
+
         // Apply response curve
         magnitude = curve.Evaluate(magnitude);
 

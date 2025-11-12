@@ -1,25 +1,44 @@
 # CRIMSON COMET - Tuning Values
 
-## Date: 29/10/2025
+## Date: [Today's date]
 
-### PlayerController - Movement
-- Thrust Force: 50
-- Strafe Force: 30
-- Vertical Force: 25
+## Status: Day 3 Complete - Controls feel GOOD
+
+### PlayerController - Movement Forces
+
+- Thrust Force: [YOUR VALUE]
+- Strafe Force: [YOUR VALUE]
+- Vertical Force: [YOUR VALUE]
 
 ### PlayerController - Rotation
-- Pitch Speed: 100
-- Yaw Speed: 100
+
+- Pitch Speed: [YOUR VALUE]
+- Yaw Speed: [YOUR VALUE]
+
+### PlayerController - Speed Limits
+
+- Max Normal Speed: [YOUR VALUE]
+- Max Boost Speed: [YOUR VALUE]
+
+### PlayerController - Input Settings
+
+- Stick Dead Zone: [YOUR VALUE]
+- Movement Response Curve: [Describe: Linear/EaseInOut/Custom]
+- Look Response Curve: [Describe]
 
 ### Rigidbody - Physics
+
 - Mass: 1
-- Drag: 0.2
-- Angular Drag: 2
+- Drag: [YOUR VALUE]
+- Angular Drag: [YOUR VALUE]
 
 ### Camera
+
 - Follow Speed: 10
 - Rotation Speed: 5
 
 ## Notes
-- Movement feels: floaty and makes one sick
-- Next to tune: The feeling needs work
+
+- Controls feel: [Describe the feel]
+- Best feature: [What feels amazing?]
+- Still needs work: [What's not perfect yet?]

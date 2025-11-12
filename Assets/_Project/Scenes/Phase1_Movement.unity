@@ -483,6 +483,7 @@ GameObject:
   - component: {fileID: 671787514}
   - component: {fileID: 671787518}
   - component: {fileID: 671787519}
+  - component: {fileID: 671787520}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -681,6 +682,19 @@ MonoBehaviour:
     m_RotationOrder: 4
   maxNormalSpeed: 80
   maxBoostSpeed: 120
+--- !u!114 &671787520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 671787513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37d97a3e23cf1cf4d86abd095e263483, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CollisionFeedback
+  minImpactVelocity: 10
 --- !u!1 &741037321
 GameObject:
   m_ObjectHideFlags: 0
